@@ -1,60 +1,76 @@
-export class UserBean {
-    user: string;
-    pwd: string;
-    appKey: string;
-    isCurrent: number;
+export class Bean {
+    constructor(obj ? : Bean) {
+        Object.assign(this, obj);
+    }
+    cloneWithDollarPrefix() {
+        let obj = Object.assign({}, this);
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                obj["$" + key] = obj[key]
+                delete(obj[key]);
+            }
+        }
+        return obj;
+    }
+}
+export class UserBean extends Bean {
+    user: string = this.user || "";
+    pwd: string = this.pwd || "";
+    appKey: string = this.appKey || "";
+    isCurrent: number = this.isCurrent || 0;
 };
-export class BlogInfoBean {
-    blogid: string;
-    url: string;
-    blogName: string;
-    blogUser: string;
+export class BlogInfoBean extends Bean {
+    blogid: string = this.blogid || "";
+    url: string = this.url || "";
+    blogName: string = this.blogName || "";
+    blogUser: string = this.blogUser || "";
+    isCurrent: number = this.isCurrent || 0;
 };
-export class PostBean {
-    dateCreated: number;
-    description: string;
-    title: string;
-    categories: string;
-    enclosure: string;
-    link: string;
-    permalink: string;
-    postid: string;
-    source: string;
-    userid: string;
-    mt_allow_comments: string;
-    mt_allow_pings: string;
-    mt_convert_breaks: string;
-    mt_excerpt: string;
-    mt_keywords: string;
-    wp_slug: string
+export class PostBean extends Bean {
+    dateCreated: number = this.dateCreated || 0;
+    description: string = this.description || "";
+    title: string = this.title || "";
+    categories: string = this.categories || "";
+    enclosure: string = this.enclosure || "";
+    link: string = this.link || "";
+    permalink: string = this.permalink || "";
+    postid: string = this.postid || "";
+    source: string = this.source || "";
+    userid: string = this.userid || "";
+    mt_allow_comments: string = this.mt_allow_comments || "";
+    mt_allow_pings: string = this.mt_allow_pings || "";
+    mt_convert_breaks: string = this.mt_convert_breaks || "";
+    mt_excerpt: string = this.mt_excerpt || "";
+    mt_keywords: string = this.mt_keywords || "";
+    wp_slug: string = this.wp_slug || ""
 };
-export class CategoryInfoBean {
-    description: string;
-    htmlUrl: string;
-    rssUrl: string;
-    title: string;
-    categoryid: string
+export class CategoryInfoBean extends Bean {
+    description: string = this.description || "";
+    htmlUrl: string = this.htmlUrl || "";
+    rssUrl: string = this.rssUrl || "";
+    title: string = this.title || "";
+    categoryid: string = this.categoryid || ""
 };
-export class FileDataBean {
-    bits: string;
-    name: string;
-    type: string
+export class FileDataBean extends Bean {
+    bits: string = this.bits || "";
+    name: string = this.name || "";
+    type: string = this.type || ""
 };
-export class UrlDataBean {
-    url: string
+export class UrlDataBean extends Bean {
+    url: string = this.url || ""
 };
-export class WpCategoryBean {
-    name: string;
-    slug: string;
-    parent_id: number;
-    description: string
+export class WpCategoryBean extends Bean {
+    name: string = this.name || "";
+    slug: string = this.slug || "";
+    parent_id: number = this.parent_id || 0;
+    description: string = this.description || ""
 };
-export class EnclosureBean {
-    length: number;
-    type: string;
-    url: string
+export class EnclosureBean extends Bean {
+    length: number = this.length || 0;
+    type: string = this.type || "";
+    url: string = this.url || ""
 };
-export class SourceBean {
-    name: string;
-    url: string
+export class SourceBean extends Bean {
+    name: string = this.name || "";
+    url: string = this.url || ""
 };

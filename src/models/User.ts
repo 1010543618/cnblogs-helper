@@ -1,16 +1,14 @@
-import { Basic } from "./Basic";
+import Basic from "./Basic";
 import { UserBean } from "../beans";
 export default class User extends Basic {
-    check(user: UserBean): Promise < boolean > {
+    tablename = "User";
+    getCurrent(): Promise < UserBean > {
         var _this = this;
         return new Promise((res, rej) => {
             try {
-                _this.client.methodCall('blogger.getUsersBlogs', [user.appKey, user.user, user.pwd], (error, value) => {
-                    if (value && value.length > 0) { // 用户存在
-                        res(true);
-                    } else { // 用户不存在 
-                        res(false);
-                    }
+                _this.db.get("select * from User where isCurrent = 1", (err, row) => {
+                    if (err) { rej(err); return; }
+                    res(new UserBean(row));
                 });
             } catch (error) {
                 rej(error);

@@ -4,20 +4,24 @@ export function sync(gen) {
     function next(err, pre) {
         let temp;
         !err && (temp = g.next(pre));
-        err && (temp = g.throw(pre));
+        err && (temp = g.throw(err));
 
         if (!temp.done) {
             const value = temp.value;
             if (typeof value.then == "function" && typeof value.catch == "function") { // Promise
-                value.then(success => next(null, success))
-                    .catch(error => next(error, undefined))
+                value.catch(error => next(error, undefined))
+                    .then(success => next(null, success))
+                    .catch(error => { console.error(error) });
             } else if (value.isEffect) { // Effect
                 value.type === "call" && runCallEffect(value, next);
+            } else if (value.isError) {
+                next(value.Error, null);
             } else {
                 next(false, value);
             }
         }
     }
+    
     next(false, undefined);
 }
 
@@ -42,8 +46,16 @@ export function call(fn, ...args) {
 
 }
 
+export function error(err) {
+    return {
+        isError: true,
+        Error: err,
+    }
+}
+
 function runCallEffect({ _this, fn, args }, next) {
     fn.call(_this, ...args)
-        .then(success => next(null, success))
         .catch(error => next(error))
+        .then(success => next(null, success))
+        .catch(error => { console.error(error) });
 }

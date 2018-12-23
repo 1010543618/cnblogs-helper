@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS BlogInfo (
   url TEXT,
   blogName TEXT,
   blogUser TEXT,
+  isCurrent INTEGER, -- 0 or 1
   FOREIGN KEY(blogUser) REFERENCES User(user)
 );
 CREATE TABLE IF NOT EXISTS Post (
