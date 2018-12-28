@@ -3,13 +3,13 @@ var User = require('../../lib/models/User').default;
 var beans = require('../../lib/beans');
 
 test('model-User test', function(t) {
+    atest(t);
+})
+
+async function atest(t) {
     let user = new User();
-    
-    user.getCurrent().then(
-        d => {
-            t.ok(d instanceof beans.UserBean);
-        }
-    );
+
+    t.ok((await user.getCurrent()) instanceof beans.UserBean);
 
     t.end();
-})
+}

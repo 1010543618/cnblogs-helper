@@ -1,5 +1,5 @@
-export function sync(gen) {
-    const g = gen();
+export function sync(gen, ...args) {
+    const g = gen(...args);
 
     function next(err, pre) {
         let temp;

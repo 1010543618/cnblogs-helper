@@ -1,6 +1,6 @@
 import Basic from "./Basic";
 import { UserBean, BlogInfoBean } from "../beans";
-export default class Blog extends Basic {
+export default class Blog extends Basic < BlogInfoBean > {
     tablename = "BlogInfo";
     getFromCB(user: UserBean): Promise < BlogInfoBean > {
         var _this = this;

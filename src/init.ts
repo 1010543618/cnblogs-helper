@@ -1,10 +1,10 @@
-import config from './config/config';
-import blog from './blog';
-import category from './category';
-import post from './post';
+import { blogGen } from './blog';
+import { categoryGen } from './category';
+import { pullPostGen } from './post';
 import { sync } from './utils/sync';
 import usage from "./utils/usage";
-import user from './user';
+import { userGen } from './user';
+import cbh from './cbh';
 
 const fs = require('fs');
 const path = require("path");
@@ -14,12 +14,14 @@ Object.defineProperty(init, "usage", {
     value: usage('init', 'cbh init', null)
 })
 
-sync(init);
+export default function init() {
+    sync(initGen);
+}
 
-export default function* init() {
-    const dataFolderPath = path.resolve(config.userDataPath, config.dataFolder);
+export function* initGen() {
+    const dataFolderPath = path.resolve(cbh.config.userDataPath, cbh.config.dataFolder);
     fs.existsSync(dataFolderPath) || fs.mkdirSync(dataFolderPath);
-    const db = new sqlite3.Database(path.resolve(dataFolderPath, config.dbName));
+    const db = new sqlite3.Database(path.resolve(dataFolderPath, cbh.config.dbName));
 
     yield new Promise((res, rej) => {
         db.exec(fs.readFileSync(path.resolve(__dirname, "./init.sql")).toString(),
@@ -32,9 +34,9 @@ export default function* init() {
             });
     });
 
-    yield* user();
-    yield* blog();
-    yield* category();
-    yield* post();
+    yield* userGen();
+    yield* blogGen();
+    yield* categoryGen();
+    yield* pullPostGen(10);
     yield "Successful initialization!";
 }

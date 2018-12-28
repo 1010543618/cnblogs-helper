@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 ;(function () {
-  var cbh = require('../lib/cbh.js')
+  var cbh = require('../lib/cbh.js').default;
 
   var command = require('../lib/config/cmd-list.js')
   var shorthands = command.shorthands
@@ -8,7 +8,7 @@
   var nopt = require('nopt')
 
   var conf = nopt(types, shorthands)
-  cbh.argv = conf.argv.remain
+  cbh.argv = conf.argv.remain.slice(0);
   if (cbh.deref(cbh.argv[0])) cbh.command = cbh.argv.shift()
   else conf.usage = true
 
@@ -21,8 +21,8 @@
   // now actually fire up npm and run the command.
   // this is how to use npm programmatically:
   conf._exit = true
-  cbh.load(conf, function (er) {
-    if (er) return console.error(er);
+  cbh.load(conf, function (err) {
+    if (err) return console.error(err);
     cbh.commands[cbh.command](cbh.argv, function (err) {
       console.error(err);
     })

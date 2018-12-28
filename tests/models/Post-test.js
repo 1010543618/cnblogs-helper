@@ -1,16 +1,20 @@
-var test = require('tape');
+var tape = require('tape');
 var Post = require('../../lib/models/Post').default;
 var beans = require('../../lib/beans');
 
-test('model-Post test', function(t) {
+tape('model-Post test', function(t) {
+    atest(t);
+})
+
+async function atest(t) {
     let post = new Post();
 
-    post.pull(new beans.BlogInfoBean({ blogid: "test" }), new beans.UserBean({ user: "test", pwd: "test" })).catch(
-        d => {
-            t.equal(d.code, 500);
-            t.equal(d.faultString, "blogapp is not matched");
-        }
-    );
+    try {
+        await post.pull(new beans.BlogInfoBean({ blogid: "test" }),
+            new beans.UserBean({ user: "test", pwd: "test" }), 1);
+    } catch (e) {
+        t.equal(e.code, 500);
+    }
 
     t.end();
-})
+}

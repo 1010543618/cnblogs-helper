@@ -10,39 +10,43 @@ Object.defineProperty(user, "usage", {
     value: usage('user', 'cbh user', null)
 })
 
-export default function* user() {
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
+export default function user() {
+    
+}
 
-        let userMap = {
-                "cnblogs' username": "user",
-                "cnblogs' password": "pwd"
-            },
-            user = new UserBean(),
-            userModel = new User(),
-            blogModel = new Blog();
+export function* userGen() {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
 
-        for (const key in userMap) {
-            if (userMap.hasOwnProperty(key)) {
-                user[userMap[key]] = yield new Promise((res, rej) => {
-                    rl.question(`${key}：`, (answer) => {
-                        res(answer);
-                    });
-                })
-            }
+    let userMap = {
+            "cnblogs' username": "user",
+            "cnblogs' password": "pwd"
+        },
+        user = new UserBean(),
+        userModel = new User(),
+        blogModel = new Blog();
+
+    for (const key in userMap) {
+        if (userMap.hasOwnProperty(key)) {
+            user[userMap[key]] = yield new Promise((res, rej) => {
+                rl.question(`${key}：`, (answer) => {
+                    res(answer);
+                });
+            })
         }
+    }
 
-        rl.close();
+    rl.close();
 
-        if (!user.user || !user.pwd) {
-            return;
-        }
+    if (!user.user || !user.pwd) {
+        return;
+    }
 
-        // 用不不存在会抛出异常
-        yield call([blogModel, "getFromCB"], user);
+    // 用不不存在会抛出异常
+    yield call([blogModel, "getFromCB"], user);
 
-        user.isCurrent = 1;
-        yield call([userModel, "add"], [user]);
+    user.isCurrent = 1;
+    yield call([userModel, "add"], [user]);
 }

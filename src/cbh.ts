@@ -1,19 +1,31 @@
-export default cbh;
-
-import {aliases, cmdList} from './config/cmd-list';
+import { aliases, cmdList } from './config/cmd-list';
+import {default as defaultConfig} from './config/config';
 
 // 实例化 cbh 为 EventEmitter
 var EventEmitter = require('events').EventEmitter
-var cbh = module.exports = new EventEmitter()
 
 var fs = require('fs');
 var path = require('path')
 var abbrev = require('abbrev')
 
+let cbh = new EventEmitter()
+// config
+cbh.config = {
+    loaded: false,
+    get: function(key) {
+        if (!this.loaded) throw new Error('cbh.load() required');
+        return this[key];
+    },
+    set: function(key, val) {
+        if (!this.loaded) throw new Error('cbh.load() required');
+        return this[key] = val;
+    }
+}
+
 // commands
 cbh.commands = {}
 
-// npm 的 name 和 version
+// cbh 的 name 和 version
 try {
     // startup, ok to do this synchronously
     var j = JSON.parse(fs.readFileSync(
@@ -42,8 +54,8 @@ Object.keys(abbrevs).forEach(function addCommand(c) {
         get: function() {
             if (!loaded) {
                 throw new Error(
-                    'Call npm.load(config, cb) before using this command.\n' +
-                    'See the README.md or bin/npm-cli.js for example usage.'
+                    'Call cbh.load(config, cb) before using this command.\n' +
+                    'See the README.md or bin/cbh-cli.js for example usage.'
                 )
             }
             var a = cbh.deref(c)
@@ -157,7 +169,9 @@ cbh.load = function(cli, cb_) {
         if (loadErr) return
         loadErr = er
         if (er) return cb_(er)
+        initConfig(cli);
         loaded = true
+        // 会调用 loadListeners 中的 cb_
         loadCb(loadErr = er)
     }
 
@@ -193,3 +207,17 @@ Object.getOwnPropertyNames(cbh.commands).forEach(function(n) {
 if (require.main === module) {
     require('../bin/cbh-cli.js')
 }
+
+function initConfig(cli){
+    let userConfigPath = process.cwd() + '/cbhconfig.json';
+    Object.assign(cbh.config, defaultConfig);
+    
+    if(fs.existsSync(userConfigPath)){
+        Object.assign(cbh.config, require(userConfigPath));
+    }
+    
+    cbh.config.opts = cli;
+    cbh.config.loaded = true;
+}
+
+export default cbh;

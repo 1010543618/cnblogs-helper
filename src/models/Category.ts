@@ -1,7 +1,7 @@
 import Basic from "./Basic";
 import { CategoryInfoBean, UserBean, BlogInfoBean } from "../beans";
 
-export default class Category extends Basic {
+export default class Category extends Basic < CategoryInfoBean > {
     tablename = "CategoryInfo";
 
     pull(user: UserBean, blog: BlogInfoBean): Promise < boolean > {

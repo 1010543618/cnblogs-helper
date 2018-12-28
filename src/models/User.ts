@@ -1,6 +1,6 @@
 import Basic from "./Basic";
 import { UserBean } from "../beans";
-export default class User extends Basic {
+export default class User extends Basic < UserBean > {
     tablename = "User";
     getCurrent(): Promise < UserBean > {
         var _this = this;

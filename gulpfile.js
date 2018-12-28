@@ -1,32 +1,29 @@
-var gulp = require("gulp");
+var { src, dest, watch } = require("gulp");
 var ts = require("gulp-typescript");
 var tsProject = ts.createProject("tsconfig.json");
-var sourcemaps = require('gulp-sourcemaps');
 
-gulp.task("dev", function() {
-    gulp
-      .src('src/init.sql')
-      .pipe(gulp.dest('lib'));
+function dev() {
+    src('src/init.sql')
+        .pipe(dest('lib'));
 
-    return gulp.src('src/**/*.ts')
-        .pipe(sourcemaps.init())
+    return src('src/**/*.ts', { sourcemaps: true })
         .pipe(tsProject())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest("lib"));
-});
+        .pipe(dest("lib"), { sourcemaps: true });
+};
 
-gulp.task("prod", function() {
-    gulp
-      .src('src/init.sql')
-      .pipe(gulp.dest('lib'));
+function prod() {
+    src('src/init.sql')
+        .pipe(dest('lib'));
 
-    return gulp.src('src/**/*.ts')
+    return src('src/**/*.ts')
         .pipe(tsProject())
-        .pipe(gulp.dest("lib"));
-});
+        .pipe(dest("lib"));
+};
 
-gulp.task("watch", function() {
-    gulp.watch("./src/**/*.ts", ["dev"]);
-});
+function watchSrc() {
+    dev();
+    watch("./src/**/*.ts", dev);
+}
 
-
+exports.watch = watchSrc;
+exports.prod = prod;

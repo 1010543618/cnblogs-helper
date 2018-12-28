@@ -8,7 +8,11 @@ Object.defineProperty(category, "usage", {
     value: usage('category', 'cbh category', null)
 })
 
-export default function* category() {
+export default function category() {
+    
+}
+
+export function* categoryGen() {
     let categoryModel = new Category();
 
     yield call([categoryModel, "pull"],

@@ -1,3 +1,5 @@
+var pangu = require('pangu');
+
 export class Bean {
     constructor(obj ? : Bean) {
         Object.assign(this, obj);
@@ -30,7 +32,9 @@ export class PostBean extends Bean {
     dateCreated: number = this.dateCreated || 0;
     description: string = this.description || "";
     title: string = this.title || "";
-    categories: string = this.categories || "";
+    titlePangu: string = pangu.spacing(this.title);
+    categories: string | Array < string > = Object.prototype.toString.call(this.categories) === '[object Array]' ?
+        JSON.stringify(this.categories) : this.categories || "";
     enclosure: string = this.enclosure || "";
     link: string = this.link || "";
     permalink: string = this.permalink || "";

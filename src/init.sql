@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS Post (
   dateCreated NUMERIC,
   description TEXT,
   title TEXT,
+  titlePangu TEXT,
   categories TEXT, -- array of string
   enclosure TEXT, -- struct Enclosure
   link TEXT,

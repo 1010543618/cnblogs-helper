@@ -8,7 +8,11 @@ Object.defineProperty(blog, "usage", {
     value: usage('blog', 'cbh blog', null)
 })
 
-export default function* blog() {
+export default function blog() {
+
+}
+
+export function* blogGen() {
     let blogModel = new Blog(),
         userModel = new User(),
         blog = yield call([blogModel, "getFromCB"],
