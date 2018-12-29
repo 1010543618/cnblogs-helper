@@ -32,20 +32,37 @@ export default function post(argv) {
 export function* pullPostGen(num = 200) {
     let postModel = new Post();
 
-    yield call([postModel, "pull"],
-        yield call([(new Blog()), "getCurrent"]),
-            yield call([(new User()), "getCurrent"]), num);
+    yield call([postModel, "add"],
+        yield call([postModel, "getCB"],
+            yield call([(new Blog()), "getCurrent"]),
+                yield call([(new User()), "getCurrent"]), num));
 }
 
 export function* pushPostGen() {
     let postModel = new Post();
+    let curBlog = yield call([(new Blog()), "getCurrent"]);
+    let curUser = yield call([(new User()), "getCurrent"]);
+    let addedPost = yield call([postModel, "get"], "addtype = added");
+    let modifiedPost = yield call([postModel, "get"], "addtype = modified");
+    
+    for (let i = 0; i < addedPost.length; i++) {
+        const post = addedPost[i];
+        yield call([postModel, "addCB"], curBlog, curUser, post);
+    }
 
-    yield call([postModel, "pull"],
-        yield call([(new Blog()), "getCurrent"]),
-            yield call([(new User()), "getCurrent"]));
+    for (let i = 0; i < modifiedPost.length; i++) {
+        const post = addedPost[i];
+        yield call([postModel, "editCB"], curBlog, curUser, post);
+    }
+
+    console.log("dbh post push 成功，添加随笔：");
+    console.log(addedPost.map(d => d.title).join("\r\n"));
+
+    console.log("修改随笔：");
+    console.log(modifiedPost.map(d => d.title).join("\r\n"));
 }
 
-async function addPostGen() {
+function addPostGen() {
     let categoryMap = cbh.config.get('categoryMap');
     for (const key in categoryMap) {
         let promises = [];
@@ -64,8 +81,9 @@ async function addPostGen() {
                 }
             });
         }
-        Promise.all(promises).then(() => {
-            console.log("成功");
+        Promise.all(promises).then((val) => {
+            console.log("dbh post add 成功，添加记录：");
+            console.log(val.filter(d => d).join("\r\n"));
         }).catch((e) => {
             console.log(e)
         })
@@ -77,15 +95,16 @@ async function addOrEditPost(title, description, categorie) {
     let post = new Post();
     let where = `title = '${title}' or titlePangu = '${title}' and categories like '%${categorie}%'`;
     let currentPost = (await post.get(where))[0];
-    
+
     if (currentPost) { // 已有该随笔
         if (currentPost.description === description) {
-            return;
+            return false;
         }
         // 内容不一致 - 修改
         currentPost.description = description;
+        currentPost.addtype = "modified";
         post.edit(currentPost, where);
-        return;
+        return `edit ${categorie}\\${title}`;
     }
 
     // 没有该随笔 - 添加
@@ -93,6 +112,7 @@ async function addOrEditPost(title, description, categorie) {
     currentPost.title = title;
     currentPost.description = description;
     currentPost.categories = [categorie];
+    currentPost.addtype = "added";
     post.add([currentPost]);
-
+    return `add ${categorie}\\${title}`;
 }

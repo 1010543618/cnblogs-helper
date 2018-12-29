@@ -46,7 +46,17 @@ export class PostBean extends Bean {
     mt_convert_breaks: string = this.mt_convert_breaks || "";
     mt_excerpt: string = this.mt_excerpt || "";
     mt_keywords: string = this.mt_keywords || "";
-    wp_slug: string = this.wp_slug || ""
+    wp_slug: string = this.wp_slug || "";
+    addtype: string = this.addtype || "";
+
+    removeEmptyAndDateCreated() {
+        let obj = Object.assign({}, this);
+        delete(obj.dateCreated)
+        for (const key in obj) {
+            !obj[key] && delete(obj[key]);
+        }
+        return obj;
+    }
 };
 export class CategoryInfoBean extends Bean {
     description: string = this.description || "";

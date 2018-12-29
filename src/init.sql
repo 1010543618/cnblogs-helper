@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS Post (
   mt_text_more TEXT,
   mt_excerpt TEXT,
   mt_keywords TEXT,
-  wp_slug TEXT
+  wp_slug TEXT,
+  addtype TEXT -- added/modified/(deleted 未实现)
 );
 CREATE TABLE IF NOT EXISTS CategoryInfo (
   description TEXT,

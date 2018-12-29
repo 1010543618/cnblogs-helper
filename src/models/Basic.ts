@@ -21,19 +21,21 @@ export default class Basic < T extends Bean > {
         var dollerColumns = Object.keys(dollerBean).join(",");
         var _db = this.db;
         return new Promise((res, rej) => {
-            try {
-                _db.serialize(() => {
-                    let statement = _db.prepare(`insert into ${this.tablename} (${columns}) values (${dollerColumns})`);
-                    beans.forEach(d => {
-                        statement.run(d.cloneWithDollarPrefix(), err => {
-                            if (err) { rej(err); return; }
-                        })
+            let promises = [];
+            let statement = _db.prepare(`insert into ${this.tablename} (${columns}) values (${dollerColumns})`);
+            beans.forEach(d => {
+                promises.push(new Promise((res, rej) => {
+                    statement.run(d.cloneWithDollarPrefix(), err => {
+                        if (err) { rej(err); return; }
+                        res(true);
                     })
-                    statement.finalize(() => res(true));
-                })
-            } catch (error) {
-                rej(error);
-            }
+                }));
+            });
+
+            Promise.all(promises).then(d => {
+                let errs = d.filter(d => d !== true);
+                errs.length > 0 ? rej(errs) : res(true);
+            });
         });
     }
 
@@ -42,18 +44,17 @@ export default class Basic < T extends Bean > {
             throw new Error("未设置修改条件！");
         }
         var dollerBean = bean.cloneWithDollarPrefix();
-        var columns = Object.keys(bean).map(d => { // 值不为空的set
-            return bean[d] ? `${d} = $${d}` : false;
-        }).filter(d => d).join(",");
+        var columns = Object.keys(bean)
+            .filter(d => bean[d])
+            .map(d => { // 值不为空的set
+                return `${d} = $${d}`;
+            }).join(",");
         var _db = this.db;
         return new Promise((res, rej) => {
             try {
-                _db.serialize(() => {
-                    let statement = _db.prepare(`update ${this.tablename} set ${columns} ${where} `);
-                    statement.run(dollerBean, err => {
-                        if (err) { rej(err); return; }
-                    })
-                    statement.finalize(() => res(true));
+                _db.run(`update ${this.tablename} set ${columns} ${where}`, dollerBean, err => {
+                    if (err) { rej(err); return; }
+                    res(true);
                 })
             } catch (error) {
                 rej(error);
@@ -65,16 +66,14 @@ export default class Basic < T extends Bean > {
         var _db = this.db;
         return new Promise((res, rej) => {
             try {
-                _db.serialize(() => {
-                    let beans = [];
-                    _db.each(`select * from ${this.tablename} where ${where}`, (err, row) => {
-                        if (err) { rej(err); return; }
-                        beans.push(new this.bean(row));
-                    }, (err) => {
-                        if (err) { rej(err); return; }
-                        res(beans);
-                    });
-                })
+                let beans = [];
+                _db.each(`select * from ${this.tablename} where ${where}`, (err, row) => {
+                    if (err) { rej(err); return; }
+                    beans.push(new this.bean(row));
+                }, (err) => {
+                    if (err) { rej(err); return; }
+                    res(beans);
+                });
             } catch (error) {
                 rej(error);
             }

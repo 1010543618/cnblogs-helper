@@ -10,8 +10,23 @@ async function atest(t) {
     let post = new Post();
 
     try {
-        await post.pull(new beans.BlogInfoBean({ blogid: "test" }),
+        await post.getCB(new beans.BlogInfoBean({ blogid: "test" }),
             new beans.UserBean({ user: "test", pwd: "test" }), 1);
+    } catch (e) {
+        t.equal(e.code, 500);
+    }
+
+    try {
+        await post.addCB(new beans.BlogInfoBean({ blogid: "test" }),
+            new beans.UserBean({ user: "test", pwd: "test" }),
+            new beans.PostBean({ title: "test", description: "test" }));
+    } catch (e) {
+        t.equal(e.code, 500);
+    }
+
+    try {
+        await post.editCB(new beans.UserBean({ user: "test", pwd: "test" }),
+            new beans.PostBean({ postid: 'test' }));
     } catch (e) {
         t.equal(e.code, 500);
     }
