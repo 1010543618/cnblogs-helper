@@ -4,13 +4,22 @@ export class Bean {
     constructor(obj ? : Bean) {
         Object.assign(this, obj);
     }
+
     cloneWithDollarPrefix() {
-        let obj = Object.assign({}, this);
+        let obj = Object.assign(Object.create(this.constructor.prototype), this);
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
                 obj["$" + key] = obj[key]
                 delete(obj[key]);
             }
+        }
+        return obj;
+    }
+
+    removeEmpty() {
+        let obj = Object.assign(Object.create(this.constructor.prototype), this);
+        for (const key in obj) {
+            !obj[key] && delete(obj[key]);
         }
         return obj;
     }
@@ -49,12 +58,9 @@ export class PostBean extends Bean {
     wp_slug: string = this.wp_slug || "";
     addtype: string = this.addtype || "";
 
-    removeEmptyAndDateCreated() {
-        let obj = Object.assign({}, this);
-        delete(obj.dateCreated)
-        for (const key in obj) {
-            !obj[key] && delete(obj[key]);
-        }
+    removeDateCreated() {
+        let obj = Object.assign(Object.create(this.constructor.prototype), this);
+        obj.dateCreated && delete(obj.dateCreated);
         return obj;
     }
 };

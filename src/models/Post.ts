@@ -2,7 +2,7 @@ import Basic from "./Basic";
 import { UserBean, BlogInfoBean, PostBean } from "../beans";
 export default class Post extends Basic < PostBean > {
     tablename = "Post";
-    
+    bean = PostBean;
     getCB(blog: BlogInfoBean, user: UserBean, num: Number): Promise < Array<PostBean> > {
         var _this = this;
         return new Promise((res, rej) => {
@@ -19,7 +19,7 @@ export default class Post extends Basic < PostBean > {
 
     addCB(blog: BlogInfoBean, user: UserBean, post: PostBean): Promise < boolean > {
         var _this = this;
-        post = post.removeEmptyAndDateCreated();
+        post = post.removeDateCreated().removeEmpty();
         return new Promise((res, rej) => {
             try {
                 _this.client.methodCall('metaWeblog.newPost', [blog.blogid, user.user, user.pwd, post, false], (err, value) => {
@@ -34,7 +34,7 @@ export default class Post extends Basic < PostBean > {
 
     editCB(user: UserBean, post: PostBean): Promise < boolean > {
         var _this = this;
-        post = post.removeEmptyAndDateCreated();
+        post = post.removeDateCreated().removeEmpty();
         return new Promise((res, rej) => {
             try {
                 _this.client.methodCall('metaWeblog.editPost', [post.postid, user.user, user.pwd, post, false], (err, value) => {

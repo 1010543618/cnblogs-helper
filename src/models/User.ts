@@ -2,6 +2,7 @@ import Basic from "./Basic";
 import { UserBean } from "../beans";
 export default class User extends Basic < UserBean > {
     tablename = "User";
+    bean = UserBean;
     getCurrent(): Promise < UserBean > {
         var _this = this;
         return new Promise((res, rej) => {

@@ -3,7 +3,7 @@ import { CategoryInfoBean, UserBean, BlogInfoBean } from "../beans";
 
 export default class Category extends Basic < CategoryInfoBean > {
     tablename = "CategoryInfo";
-
+    bean = CategoryInfoBean;
     pull(user: UserBean, blog: BlogInfoBean): Promise < boolean > {
         var _this = this;
         return new Promise((res, rej) => {

@@ -2,6 +2,7 @@ import Basic from "./Basic";
 import { UserBean, BlogInfoBean } from "../beans";
 export default class Blog extends Basic < BlogInfoBean > {
     tablename = "BlogInfo";
+    bean = BlogInfoBean;
     getFromCB(user: UserBean): Promise < BlogInfoBean > {
         var _this = this;
         return new Promise((res, rej) => {

@@ -16,5 +16,7 @@ async function atest(t) {
     let tpost = await basic.get("title = 'test'");
     t.equal(tpost[0].title, "test");
 
+    t.equal(await basic.edit(new PostBean({ title: "test", "description": "test" }), "title = 'test'"), true);
+
     t.end();
 }

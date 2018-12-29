@@ -42,8 +42,8 @@ export function* pushPostGen() {
     let postModel = new Post();
     let curBlog = yield call([(new Blog()), "getCurrent"]);
     let curUser = yield call([(new User()), "getCurrent"]);
-    let addedPost = yield call([postModel, "get"], "addtype = added");
-    let modifiedPost = yield call([postModel, "get"], "addtype = modified");
+    let addedPost = yield call([postModel, "get"], "addtype = 'added'");
+    let modifiedPost = yield call([postModel, "get"], "addtype = 'modified'");
     
     for (let i = 0; i < addedPost.length; i++) {
         const post = addedPost[i];
@@ -51,8 +51,8 @@ export function* pushPostGen() {
     }
 
     for (let i = 0; i < modifiedPost.length; i++) {
-        const post = addedPost[i];
-        yield call([postModel, "editCB"], curBlog, curUser, post);
+        const post = modifiedPost[i];
+        yield call([postModel, "editCB"], curUser, post);
     }
 
     console.log("dbh post push 成功，添加随笔：");
@@ -97,12 +97,15 @@ async function addOrEditPost(title, description, categorie) {
     let currentPost = (await post.get(where))[0];
 
     if (currentPost) { // 已有该随笔
-        if (currentPost.description === description) {
+        if (currentPost.description === description) {// 内容一致
             return false;
         }
+
         // 内容不一致 - 修改
         currentPost.description = description;
-        currentPost.addtype = "modified";
+        if(currentPost.addtype !== "added"){// 状态为 added 时不改变状态
+            currentPost.addtype = "modified";
+        }
         post.edit(currentPost, where);
         return `edit ${categorie}\\${title}`;
     }

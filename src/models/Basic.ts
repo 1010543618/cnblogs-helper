@@ -43,16 +43,14 @@ export default class Basic < T extends Bean > {
         if (!where) {
             throw new Error("未设置修改条件！");
         }
-        var dollerBean = bean.cloneWithDollarPrefix();
-        var columns = Object.keys(bean)
-            .filter(d => bean[d])
-            .map(d => { // 值不为空的set
-                return `${d} = $${d}`;
-            }).join(",");
-        var _db = this.db;
+        bean = bean.removeEmpty();
+        let dollerBean = bean.cloneWithDollarPrefix();
+        let columns = Object.keys(bean)
+            .map(d => `${d} = $${d}`).join(",");
+        let _db = this.db;
         return new Promise((res, rej) => {
             try {
-                _db.run(`update ${this.tablename} set ${columns} ${where}`, dollerBean, err => {
+                _db.run(`update ${this.tablename} set ${columns} where ${where}`, dollerBean, err => {
                     if (err) { rej(err); return; }
                     res(true);
                 })
