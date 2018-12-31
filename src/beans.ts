@@ -1,7 +1,7 @@
 var pangu = require('pangu');
 
 export class Bean {
-    constructor(obj ? : Bean) {
+    constructor(obj ? : any) {
         Object.assign(this, obj);
     }
 

@@ -21,7 +21,7 @@ async function atest(t) {
             new beans.UserBean({ user: "test", pwd: "test" }),
             new beans.PostBean({ title: "test", description: "test" }));
     } catch (e) {
-        t.ok(e.code === 500 || e.code === 0);// 被antitheft禁止了。。
+        t.ok(e.code === 500);
     }
 
     try {
@@ -30,6 +30,9 @@ async function atest(t) {
     } catch (e) {
         t.equal(e.code, 500);
     }
+
+    await post.add([new beans.PostBean({ title: "test-ra", addtype: "added"})])
+    t.equal(await post.removeAddtype(new beans.PostBean({ title: "test-ra"})), true);
 
     t.end();
 }

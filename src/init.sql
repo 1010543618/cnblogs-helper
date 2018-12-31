@@ -11,18 +11,20 @@ CREATE TABLE IF NOT EXISTS BlogInfo (
   blogName TEXT,
   blogUser TEXT,
   isCurrent INTEGER, -- 0 or 1
+  PRIMARY KEY(blogid),
   FOREIGN KEY(blogUser) REFERENCES User(user)
 );
 CREATE TABLE IF NOT EXISTS Post (
-  dateCreated NUMERIC,
-  description TEXT,
+  postid TEXT,
   title TEXT,
   titlePangu TEXT,
+  description TEXT,
   categories TEXT, -- array of string
+  addtype TEXT, -- "null"/"added"/"modified"/("deleted" 未实现)
+  dateCreated NUMERIC,
   enclosure TEXT, -- struct Enclosure
   link TEXT,
   permalink TEXT,
-  postid TEXT,
   source TEXT,-- struct Source
   userid TEXT,
   mt_allow_comments TEXT,
@@ -32,14 +34,15 @@ CREATE TABLE IF NOT EXISTS Post (
   mt_excerpt TEXT,
   mt_keywords TEXT,
   wp_slug TEXT,
-  addtype TEXT -- added/modified/(deleted 未实现)
+  PRIMARY KEY(postid, title)
 );
 CREATE TABLE IF NOT EXISTS CategoryInfo (
   description TEXT,
   htmlUrl TEXT,
   rssUrl TEXT,
   title TEXT,
-  categoryid TEXT
+  categoryid TEXT,
+  PRIMARY KEY(categoryid)
 );
 CREATE TABLE IF NOT EXISTS FileData (
   bits BLOB,

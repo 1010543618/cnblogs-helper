@@ -37,6 +37,6 @@ export function* initGen() {
     yield* userGen();
     yield* blogGen();
     yield* categoryGen();
-    yield* pullPostGen(10);
+    yield* pullPostGen(999);
     yield "Successful initialization!";
 }

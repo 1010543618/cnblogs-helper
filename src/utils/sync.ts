@@ -21,7 +21,7 @@ export function sync(gen, ...args) {
             }
         }
     }
-    
+
     next(false, undefined);
 }
 
@@ -51,6 +51,14 @@ export function error(err) {
         isError: true,
         Error: err,
     }
+}
+
+export function sleep(ms) {
+    return new Promise(res => {
+        setTimeout(() => {
+            res();
+        }, ms);
+    })
 }
 
 function runCallEffect({ _this, fn, args }, next) {

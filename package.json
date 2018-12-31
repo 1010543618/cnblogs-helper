@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "tape tests/**/*.js"
+    "test": "tape tests/**/*.js",
+    "build": "npm test && gulp prod",
+    "prepublishOnly": "npm build"
   },
   "author": "",
   "license": "MIT",

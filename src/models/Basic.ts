@@ -22,7 +22,7 @@ export default class Basic < T extends Bean > {
         var _db = this.db;
         return new Promise((res, rej) => {
             let promises = [];
-            let statement = _db.prepare(`insert into ${this.tablename} (${columns}) values (${dollerColumns})`);
+            let statement = _db.prepare(`insert or replace into ${this.tablename} (${columns}) values (${dollerColumns})`);
             beans.forEach(d => {
                 promises.push(new Promise((res, rej) => {
                     statement.run(d.cloneWithDollarPrefix(), err => {
