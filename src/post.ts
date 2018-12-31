@@ -47,12 +47,16 @@ export function* pushPostGen() {
     
     for (let i = 0; i < addedPost.length; i++) {
         const post = addedPost[i];
-        yield call([postModel, "addCB"], curBlog, curUser, post);
+        post.postid = yield call([postModel, "addCB"], curBlog, curUser, post);
+        post.addtype = "";
+        yield call([postModel, "edit"], post, `title = '${post.title}'`);
     }
 
     for (let i = 0; i < modifiedPost.length; i++) {
         const post = modifiedPost[i];
         yield call([postModel, "editCB"], curUser, post);
+        post.addtype = "";
+        yield call([postModel, "edit"], post, `title = '${post.title}'`);
     }
 
     console.log("dbh post push 成功，添加随笔：");
@@ -114,7 +118,7 @@ async function addOrEditPost(title, description, categorie) {
     currentPost = new PostBean();
     currentPost.title = title;
     currentPost.description = description;
-    currentPost.categories = [categorie];
+    currentPost.categories = JSON.stringify([categorie]);
     currentPost.addtype = "added";
     post.add([currentPost]);
     return `add ${categorie}\\${title}`;

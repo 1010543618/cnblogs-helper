@@ -11,7 +11,7 @@ export default class Basic < T extends Bean > {
     constructor() {
         const xmlrpc = require('xmlrpc');
         const sqlite3 = require('sqlite3').verbose();
-        this.client = xmlrpc.createClient(config.MetaWeblogURL);
+        this.client = xmlrpc.createSecureClient(config.MetaWeblogURL);
         this.db = new sqlite3.Database(path.resolve(config.userDataPath, config.dataFolder, config.dbName));
     }
 

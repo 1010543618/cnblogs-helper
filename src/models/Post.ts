@@ -19,7 +19,7 @@ export default class Post extends Basic < PostBean > {
 
     addCB(blog: BlogInfoBean, user: UserBean, post: PostBean): Promise < boolean > {
         var _this = this;
-        post = post.removeDateCreated().removeEmpty();
+        post = post.getCBParas().removeEmpty();
         return new Promise((res, rej) => {
             try {
                 _this.client.methodCall('metaWeblog.newPost', [blog.blogid, user.user, user.pwd, post, false], (err, value) => {
@@ -34,7 +34,7 @@ export default class Post extends Basic < PostBean > {
 
     editCB(user: UserBean, post: PostBean): Promise < boolean > {
         var _this = this;
-        post = post.removeDateCreated().removeEmpty();
+        post = post.getCBParas().removeEmpty();
         return new Promise((res, rej) => {
             try {
                 _this.client.methodCall('metaWeblog.editPost', [post.postid, user.user, user.pwd, post, false], (err, value) => {

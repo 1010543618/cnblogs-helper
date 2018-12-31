@@ -43,7 +43,7 @@ export class PostBean extends Bean {
     title: string = this.title || "";
     titlePangu: string = pangu.spacing(this.title);
     categories: string | Array < string > = Object.prototype.toString.call(this.categories) === '[object Array]' ?
-        JSON.stringify(this.categories) : this.categories || "";
+        JSON.stringify(this.categories) : this.categories || "[]";
     enclosure: string = this.enclosure || "";
     link: string = this.link || "";
     permalink: string = this.permalink || "";
@@ -58,9 +58,10 @@ export class PostBean extends Bean {
     wp_slug: string = this.wp_slug || "";
     addtype: string = this.addtype || "";
 
-    removeDateCreated() {
+    getCBParas() {
         let obj = Object.assign(Object.create(this.constructor.prototype), this);
         obj.dateCreated && delete(obj.dateCreated);
+        obj.categories = JSON.parse(obj.categories);
         return obj;
     }
 };

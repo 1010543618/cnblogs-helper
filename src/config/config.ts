@@ -7,5 +7,5 @@ export default {
     dataFolder: "cnblogsHelper", // 数据存放的文件夹名
     dbName: "cnblogs.db", // 数据库名
 
-    MetaWeblogURL: "http://www.cnblogs.com/jffun-blog/services/metablogapi.aspx",
+    MetaWeblogURL: "https://rpc.cnblogs.com/metaweblog/jffun-blog",
 }
