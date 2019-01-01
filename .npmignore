@@ -1,0 +1,6 @@
+/src
+/tests
+/tools
+/.vscode
+
+*.tgz

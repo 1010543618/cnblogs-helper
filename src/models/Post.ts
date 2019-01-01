@@ -3,7 +3,7 @@ import { UserBean, BlogInfoBean, PostBean } from "../beans";
 export default class Post extends Basic < PostBean > {
     tablename = "Post";
     bean = PostBean;
-    getCB(blog: BlogInfoBean, user: UserBean, num: Number): Promise < Array<PostBean> > {
+    getCB(blog: BlogInfoBean, user: UserBean, num: Number): Promise < Array < PostBean > > {
         var _this = this;
         return new Promise((res, rej) => {
             try {
@@ -22,7 +22,7 @@ export default class Post extends Basic < PostBean > {
         post = post.getCBParas().removeEmpty();
         return new Promise((res, rej) => {
             try {
-                _this.client.methodCall('metaWeblog.newPost', [blog.blogid, user.user, user.pwd, post, false], (err, value) => {
+                _this.client.methodCall('metaWeblog.newPost', [blog.blogid, user.user, user.pwd, post, true], (err, value) => {
                     if (err) { rej(err); return; }
                     res(value);
                 });
@@ -37,7 +37,7 @@ export default class Post extends Basic < PostBean > {
         post = post.getCBParas().removeEmpty();
         return new Promise((res, rej) => {
             try {
-                _this.client.methodCall('metaWeblog.editPost', [post.postid, user.user, user.pwd, post, false], (err, value) => {
+                _this.client.methodCall('metaWeblog.editPost', [post.postid, user.user, user.pwd, post, true], (err, value) => {
                     if (err) { rej(err); return; }
                     res(value);
                 });
@@ -48,6 +48,6 @@ export default class Post extends Basic < PostBean > {
     };
 
     removeAddtype(post: PostBean): Promise < boolean > {
-        return this.edit(new PostBean({addtype: "null"}), `title = '${post.title}'`);
+        return this.edit(new PostBean({ addtype: "null" }), [`title = $titlec`, { $titlec: post.title }]);
     };
 }

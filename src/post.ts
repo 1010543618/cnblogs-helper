@@ -42,14 +42,14 @@ export function* pushPostGen() {
     let postModel = new Post();
     let curBlog = yield call([(new Blog()), "getCurrent"]);
     let curUser = yield call([(new User()), "getCurrent"]);
-    let addedPost = yield call([postModel, "get"], "addtype = 'added'");
-    let modifiedPost = yield call([postModel, "get"], "addtype = 'modified'");
+    let addedPost = yield call([postModel, "get"], ["addtype = $addtypec", { $addtypec: "added" }]);
+    let modifiedPost = yield call([postModel, "get"], ["addtype = $addtypec", { $addtypec: "modified" }]);
 
     for (let i = 0; i < addedPost.length; i++) {
         const post = addedPost[i];
         yield call([postModel, "addCB"], curBlog, curUser, post);
         yield call([postModel, "removeAddtype"], post);
-        yield sleep(40000);// 30秒内只能发布1篇博文
+        yield sleep(40000); // 30秒内只能发布1篇博文
     }
 
     for (let i = 0; i < modifiedPost.length; i++) {
@@ -67,8 +67,8 @@ export function* pushPostGen() {
 
 function addPostGen() {
     let categoryMap = cbh.config.get('categoryMap');
+    let promises = [];
     for (const key in categoryMap) {
-        let promises = [];
         if (categoryMap.hasOwnProperty(key)) {
             // 遍历所有配置的文件夹中的 .md 文件
             let folderPath = path.resolve(process.cwd(), key);
@@ -84,19 +84,24 @@ function addPostGen() {
                 }
             });
         }
-        Promise.all(promises).then((val) => {
-            console.log("dbh post add 成功，添加记录：");
-            console.log(val.filter(d => d).join("\r\n"));
-        }).catch((e) => {
-            console.log(e)
-        })
     }
+    Promise.all(promises).then((val) => {
+        console.log("dbh post add 成功，添加记录：");
+        console.log(val.filter(d => d).join("\r\n"));
+    }).catch((e) => {
+        console.log(e)
+    })
 }
 
 
 async function addOrEditPost(title, description, categorie) {
     let post = new Post();
-    let where = `title = '${title}' or titlePangu = '${title}' and categories like '%${categorie}%'`;
+    let where = [`title = $titlec or titlePangu = $titlec and categories like $categoriec`,
+        {
+            $titlec: title,
+            $categoriec: `%categorie%`
+        }
+    ];
     let currentPost = (await post.get(where))[0];
     let tempPost = new PostBean();
     if (currentPost) { // 已有该随笔

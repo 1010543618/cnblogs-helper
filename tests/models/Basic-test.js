@@ -13,10 +13,11 @@ async function atest(t) {
 
     t.equal(await basic.add([new PostBean({ title: "test" })]), true);
 
-    let tpost = await basic.get("title = 'test'");
+    let tpost = await basic.get(["title = $test", { $test: "test" }]);
     t.equal(tpost[0].title, "test");
 
-    t.equal(await basic.edit(new PostBean({ title: "test", "description": "test" }), "title = 'test'"), true);
+    t.equal(await basic.edit(new PostBean({ title: "test", "description": "test" }),
+        ["title = $test", { $test: "test" }]), true);
 
     t.end();
 }
