@@ -49,7 +49,7 @@ export function* pushPostGen() {
         const post = addedPost[i];
         yield call([postModel, "addCB"], curBlog, curUser, post);
         yield call([postModel, "removeAddtype"], post);
-        yield sleep(40000); // 30秒内只能发布1篇博文
+        yield sleep(66666); // 30秒内只能发布1篇博文
     }
 
     for (let i = 0; i < modifiedPost.length; i++) {
@@ -96,21 +96,26 @@ function addPostGen() {
 
 async function addOrEditPost(title, description, categorie) {
     let post = new Post();
-    let where = [`title = $titlec or titlePangu = $titlec and categories like $categoriec`,
+    let where = [`(title = $titlec or titlePangu = $titlec) and categories like $categoriec`,
         {
             $titlec: title,
-            $categoriec: `%categorie%`
+            $categoriec: `%${categorie}%`
         }
     ];
     let currentPost = (await post.get(where))[0];
     let tempPost = new PostBean();
     if (currentPost) { // 已有该随笔
+        let categories = JSON.parse(<string>currentPost.categories);
         if (currentPost.description === description) { // 内容一致
-            return false;
+            if(categories.indexOf("[Markdown]") !== -1){// 有 Markdown 分类
+                return false;
+            }
         }
 
         // 内容不一致 - 修改
         tempPost.description = description;
+        // 发布 Markdown 随笔要加上 [Markdown] 这个分类
+        tempPost.categories = JSON.stringify([categorie, "[Markdown]"]);
         if (currentPost.addtype !== "added") { // 状态为 added 时不改变状态
             tempPost.addtype = "modified";
         }
@@ -121,7 +126,8 @@ async function addOrEditPost(title, description, categorie) {
     // 没有该随笔 - 添加
     tempPost.title = title;
     tempPost.description = description;
-    tempPost.categories = JSON.stringify([categorie]);
+    // 发布 Markdown 随笔要加上 [Markdown] 这个分类
+    tempPost.categories = JSON.stringify([categorie, "[Markdown]"]);
     tempPost.addtype = "added";
     post.add([tempPost]);
     return `add ${categorie}\\${title}`;

@@ -22,5 +22,6 @@ var aliases = Object.assign({}, shorthands, affordances);
 
 var types = {
     num: [null, Number],
-    pangu: Boolean
+    pangu: Boolean,
+    reset: Boolean
 }

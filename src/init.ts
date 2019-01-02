@@ -11,7 +11,7 @@ const path = require("path");
 const sqlite3 = require('sqlite3').verbose();
 
 Object.defineProperty(init, "usage", {
-    value: usage('init', 'cbh init', null)
+    value: usage('init', 'cbh init [--reset]', null)
 })
 
 export default function init() {
@@ -21,7 +21,10 @@ export default function init() {
 export function* initGen() {
     const dataFolderPath = path.resolve(cbh.config.userDataPath, cbh.config.dataFolder);
     fs.existsSync(dataFolderPath) || fs.mkdirSync(dataFolderPath);
-    const db = new sqlite3.Database(path.resolve(dataFolderPath, cbh.config.dbName));
+    const dbpath = path.resolve(dataFolderPath, cbh.config.dbName);
+    // reset
+    cbh.config.opts.reset && fs.existsSync(dbpath) && fs.unlinkSync(dbpath);
+    const db = new sqlite3.Database(dbpath);
 
     yield new Promise((res, rej) => {
         db.exec(fs.readFileSync(path.resolve(__dirname, "./init.sql")).toString(),
