@@ -46,8 +46,4 @@ export default class Post extends Basic < PostBean > {
             }
         });
     };
-
-    removeAddtype(post: PostBean): Promise < boolean > {
-        return this.edit(new PostBean({ addtype: "null" }), [`title = $titlec`, { $titlec: post.title }]);
-    };
 }

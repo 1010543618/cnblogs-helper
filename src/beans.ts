@@ -61,7 +61,17 @@ export class PostBean extends Bean {
     getCBParas() {
         let obj = Object.assign(Object.create(this.constructor.prototype), this);
         obj.dateCreated && delete(obj.dateCreated);
+        obj.description || (obj.description = "null");
         obj.categories = JSON.parse(obj.categories);
+        return obj;
+    };
+
+    removeEmpty() {
+        let obj = Object.assign(Object.create(this.constructor.prototype), this);
+        obj.categories === "[]" && delete(obj.categories);
+        for (const key in obj) {
+            !obj[key] && delete(obj[key]);
+        }
         return obj;
     }
 };

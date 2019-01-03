@@ -46,16 +46,29 @@ export function* pushPostGen() {
     let modifiedPost = yield call([postModel, "get"], ["addtype = $addtypec", { $addtypec: "modified" }]);
 
     for (let i = 0; i < addedPost.length; i++) {
-        const post = addedPost[i];
-        yield call([postModel, "addCB"], curBlog, curUser, post);
-        yield call([postModel, "removeAddtype"], post);
+        let post = addedPost[i];
+        let postid = yield call([postModel, "addCB"], curBlog, curUser, post);
+        let where = [`(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
+            {
+                $titlec: post.title,
+                $categoriesc: `%${post.categories}%`
+            }
+        ];
+        // 这里用 PostBean 会带有空的 category
+        yield call([postModel, "edit"], new PostBean({ postid, addtype: "null" }), where);
         yield sleep(66666); // 30秒内只能发布1篇博文
     }
 
     for (let i = 0; i < modifiedPost.length; i++) {
-        const post = modifiedPost[i];
+        let post = modifiedPost[i];
+        let where = [`(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
+            {
+                $titlec: post.title,
+                $categoriesc: `%${post.categories}%`
+            }
+        ];
         yield call([postModel, "editCB"], curUser, post);
-        yield call([postModel, "removeAddtype"], post);
+        yield call([postModel, "edit"], new PostBean({ addtype: "null" }), where);
     }
 
     console.log("dbh post push 成功，添加随笔：");
@@ -96,18 +109,18 @@ function addPostGen() {
 
 async function addOrEditPost(title, description, categorie) {
     let post = new Post();
-    let where = [`(title = $titlec or titlePangu = $titlec) and categories like $categoriec`,
+    let where = [`(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
         {
             $titlec: title,
-            $categoriec: `%${categorie}%`
+            $categoriesc: `%${categorie}%`
         }
     ];
     let currentPost = (await post.get(where))[0];
     let tempPost = new PostBean();
     if (currentPost) { // 已有该随笔
-        let categories = JSON.parse(<string>currentPost.categories);
+        let categories = JSON.parse( < string > currentPost.categories);
         if (currentPost.description === description) { // 内容一致
-            if(categories.indexOf("[Markdown]") !== -1){// 有 Markdown 分类
+            if (categories.indexOf("[Markdown]") !== -1) { // 有 Markdown 分类
                 return false;
             }
         }

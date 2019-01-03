@@ -32,7 +32,6 @@ async function atest(t) {
     }
 
     await post.add([new beans.PostBean({ title: "test-ra", addtype: "added"})])
-    t.equal(await post.removeAddtype(new beans.PostBean({ title: "test-ra"})), true);
 
     t.end();
 }
