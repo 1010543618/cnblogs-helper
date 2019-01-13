@@ -99,9 +99,10 @@ Object.keys(abbrevs).forEach(function addCommand(c) {
                 cmd.apply(cbh, args)
             }
 
-            Object.keys(cmd).forEach(function(k) {
-                commandCache[a][k] = cmd[k]
-            })
+            commandCache[a].usage = cmd.usage;
+            // Object.keys(cmd).forEach(function (k) {
+            //     commandCache[a][k] = cmd[k];
+            // });
 
             return commandCache[a]
         },

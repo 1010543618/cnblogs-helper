@@ -2,7 +2,14 @@ export { aliases, shorthands, affordances, cmdList, types };
 
 // short names for common things
 var shorthands = {
+    h: ['--usage'],
+    H: ['--usage'],
+    '?': ['--usage'],
+    help: ['--usage'],
+}
 
+var cmdshorthands = {
+    
 }
 
 var affordances = {
@@ -15,12 +22,14 @@ var cmdList = [
     'user',
     'blog',
     'category',
-    'post'
+    'post',
+    'help'
 ]
 
-var aliases = Object.assign({}, shorthands, affordances);
+var aliases = Object.assign({}, cmdshorthands, affordances);
 
 var types = {
+    usage: Boolean,
     num: [null, Number],
     pangu: Boolean,
     reset: Boolean

@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "gulp watch",
     "test": "tape tests/**/*.js",
     "build": "npm test && gulp prod",
-    "prepublishOnly": "npm build"
+    "prepublishOnly": "npm run build"
   },
   "author": "",
   "license": "MIT",

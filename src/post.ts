@@ -10,7 +10,18 @@ const fs = require("fs");
 const path = require("path");
 
 Object.defineProperty(post, "usage", {
-    value: usage('post', 'cbh post', null)
+    value: usage('post', `
+cbh post pull [--num <number>]
+说明: 从博客园拉随笔到本地
+参数：
+    --num 从博客园拉随笔的个数（默认200）
+
+cbh post add
+说明: 本地随笔变动添加到数据暂存区
+
+cbh post push
+说明: 将暂存区随笔变动推到博客园
+    `, null)
 })
 
 export default function post(argv) {
@@ -105,7 +116,6 @@ function addPostGen() {
         console.log(e)
     })
 }
-
 
 async function addOrEditPost(title, description, categorie) {
     let post = new Post();

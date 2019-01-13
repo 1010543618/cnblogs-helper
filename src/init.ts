@@ -11,7 +11,12 @@ const path = require("path");
 const sqlite3 = require('sqlite3').verbose();
 
 Object.defineProperty(init, "usage", {
-    value: usage('init', 'cbh init [--reset]', null)
+    value: usage('init', `
+cbh init [--reset]
+初始化博客园随笔同步工具
+参数：
+    --reset : 删除原有数据库，重新初始化
+    `, null)
 })
 
 export default function init() {
