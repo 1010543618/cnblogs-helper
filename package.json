@@ -6,7 +6,7 @@
     "start": "gulp watch",
     "test": "tape tests/**/*.js",
     "build": "npm test && gulp prod",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && git push --tags"
   },
   "author": "",
   "license": "MIT",
