@@ -6,6 +6,7 @@ var shorthands = {
     H: ['--usage'],
     '?': ['--usage'],
     help: ['--usage'],
+    l: ['--long']
 }
 
 var cmdshorthands = {
@@ -32,5 +33,6 @@ var types = {
     usage: Boolean,
     num: [null, Number],
     pangu: Boolean,
-    reset: Boolean
+    reset: Boolean,
+    long: Boolean
 }
