@@ -94,7 +94,7 @@ function addPostGen() {
         if (categoryMap.hasOwnProperty(key)) {
             // 遍历所有配置的文件夹中的 .md 文件
             let folderPath = path.resolve(process.cwd(), key);
-            fs.readdirSync(folderPath).forEach(function(file, index) {
+            fs.readdirSync(folderPath).forEach((file) => {
                 let curPath = path.resolve(folderPath, file),
                     curStat = fs.statSync(curPath);
                 if (path.extname(curPath) === ".md" && !curStat.isDirectory()) {
@@ -108,48 +108,48 @@ function addPostGen() {
         }
     }
     Promise.all(promises).then((val) => {
-        console.log("dbh post add 成功，添加记录：");
+        console.log("cbh post add 成功，添加记录：");
         console.log(val.filter(d => d).join("\r\n"));
     }).catch((e) => {
         console.log(e)
     })
 }
 
-async function addOrEditPost(title, description, categorie) {
+async function addOrEditPost(title, description, category) {
     let post = new Post();
     let where = [`(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
         {
             $titlec: title,
-            $categoriesc: `%${categorie}%`
+            $categoriesc: `%${category}%`
         }
     ];
     let currentPost = (await post.get(where))[0];
     let tempPost = new PostBean();
     if (currentPost) { // 已有该随笔
-        let categories = JSON.parse( < string > currentPost.categories);
+        let categoriesSet = new Set(JSON.parse( < string > currentPost.categories));
         if (currentPost.description === description) { // 内容一致
-            if (categories.indexOf("[Markdown]") !== -1) { // 有 Markdown 分类
-                return false;
-            }
+            return false;
         }
 
         // 内容不一致 - 修改
         tempPost.description = description;
         // 发布 Markdown 随笔要加上 [Markdown] 这个分类
-        tempPost.categories = JSON.stringify([categorie, "[Markdown]"]);
+        categoriesSet.add(category);
+        categoriesSet.add("[Markdown]")
+        tempPost.categories = JSON.stringify([...categoriesSet]);
         if (currentPost.addtype !== "added") { // 状态为 added 时不改变状态
             tempPost.addtype = "modified";
         }
-        post.edit(tempPost, where);
-        return `edit ${categorie}\\${title}`;
+        await post.edit(tempPost, where);
+        return `edit ${category}\\${title}`;
     }
 
     // 没有该随笔 - 添加
     tempPost.title = title;
     tempPost.description = description;
     // 发布 Markdown 随笔要加上 [Markdown] 这个分类
-    tempPost.categories = JSON.stringify([categorie, "[Markdown]"]);
+    tempPost.categories = JSON.stringify([category, "[Markdown]"]);
     tempPost.addtype = "added";
-    post.add([tempPost]);
-    return `add ${categorie}\\${title}`;
+    await post.add([tempPost]);
+    return `add ${category}\\${title}`;
 }

@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS Post (
   mt_excerpt TEXT,
   mt_keywords TEXT,
   wp_slug TEXT,
-  PRIMARY KEY(postid, title)
+  PRIMARY KEY(postid, title, categories)
 );
 CREATE TABLE IF NOT EXISTS CategoryInfo (
   description TEXT,
