@@ -8,7 +8,7 @@ function dev() {
 
     return src('src/**/*.ts', { sourcemaps: true })
         .pipe(tsProject())
-        .pipe(dest("lib"), { sourcemaps: true });
+        .pipe(dest("lib", { sourcemaps: true }));
 };
 
 function prod() {
