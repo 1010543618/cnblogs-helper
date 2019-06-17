@@ -46,4 +46,18 @@ export default class Post extends Basic < PostBean > {
             }
         });
     };
+
+    remove(): Promise < undefined > {
+        var _this = this;
+        return new Promise((res, rej) => {
+            try {
+                _this.db.run("Update Post set addtype = ''", (err) => {
+                    if (err) { rej(err); return; }
+                    res();
+                });
+            } catch (error) {
+                rej(error);
+            }
+        });
+    }
 }

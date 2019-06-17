@@ -19,8 +19,13 @@ cbh post add
 说明: 本地随笔变动添加到数据暂存区
 
 cbh post push
-说明: 将暂存区随笔变动推到博客园`, null)
+说明: 将暂存区随笔变动推到博客园
+
+cbh post remove
+说明: 将暂存区随笔变动清除`, null)
 })
+
+const postModel = new Post();
 
 export default function post(argv) {
     switch (argv[0]) {
@@ -28,10 +33,13 @@ export default function post(argv) {
             sync(pullPostGen, cbh.config.get('opts').num);
             break;
         case "add":
-            addPostGen();
+            addPost();
             break;
         case "push":
             sync(pushPostGen);
+            break;
+        case "remove":
+            removePost();
             break;
         default:
             break;
@@ -39,16 +47,13 @@ export default function post(argv) {
 }
 
 export function* pullPostGen(num = 200) {
-    let postModel = new Post();
-
     yield call([postModel, "add"],
         yield call([postModel, "getCB"],
             yield call([(new Blog()), "getCurrent"]),
                 yield call([(new User()), "getCurrent"]), num));
 }
 
-export function* pushPostGen() {
-    let postModel = new Post();
+function* pushPostGen() {
     let curBlog = yield call([(new Blog()), "getCurrent"]);
     let curUser = yield call([(new User()), "getCurrent"]);
     let addedPost = yield call([postModel, "get"], ["addtype = $addtypec", { $addtypec: "added" }]);
@@ -87,7 +92,7 @@ export function* pushPostGen() {
     console.log(modifiedPost.map(d => d.title).join("\r\n"));
 }
 
-function addPostGen() {
+function addPost() {
     let categoryMap = cbh.config.get('categoryMap');
     let promises = [];
     for (const key in categoryMap) {
@@ -115,15 +120,22 @@ function addPostGen() {
     })
 }
 
+function removePost() {
+    postModel.remove().then(_ => {
+        console.log("cbh post remove 成功，暂存区已无待提交的随笔");
+    }).catch((e) => {
+        console.log(e)
+    })
+}
+
 async function addOrEditPost(title, description, category) {
-    let post = new Post();
     let where = [`(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
         {
             $titlec: title,
             $categoriesc: `%${category}%`
         }
     ];
-    let currentPost = (await post.get(where))[0];
+    let currentPost = (await postModel.get(where))[0];
     let tempPost = new PostBean();
     if (currentPost) { // 已有该随笔
         let categoriesSet = new Set(JSON.parse( < string > currentPost.categories));
@@ -140,7 +152,7 @@ async function addOrEditPost(title, description, category) {
         if (currentPost.addtype !== "added") { // 状态为 added 时不改变状态
             tempPost.addtype = "modified";
         }
-        await post.edit(tempPost, where);
+        await postModel.edit(tempPost, where);
         return `edit ${category}\\${title}`;
     }
 
@@ -150,6 +162,6 @@ async function addOrEditPost(title, description, category) {
     // 发布 Markdown 随笔要加上 [Markdown] 这个分类
     tempPost.categories = JSON.stringify([category, "[Markdown]"]);
     tempPost.addtype = "added";
-    await post.add([tempPost]);
+    await postModel.add([tempPost]);
     return `add ${category}\\${title}`;
 }

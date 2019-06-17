@@ -31,7 +31,15 @@ async function atest(t) {
         t.equal(e.code, 500);
     }
 
-    await post.add([new beans.PostBean({ title: "test-ra", addtype: "added"})])
+    t.equal(await post.add([new beans.PostBean({ title: "test" })]), true);
+    await post.remove();
+    t.equal((await post.get(['addtype != $t',
+        {
+            $t1: '',
+        }
+    ])).length, 0);
+
+    await post.add([new beans.PostBean({ title: "test-ra", addtype: "added" })])
 
     t.end();
 }
