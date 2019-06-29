@@ -76,6 +76,30 @@ function* pushPostGen() {
         ["addtype = $addtypec", { $addtypec: "modified" }]
     );
 
+    // 先修改比较好，因为添加需要等好久
+    for (let i = 0; i < modifiedPost.length; i++) {
+        let post = modifiedPost[i];
+        let errMsg = null;
+        let where = [
+            `(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
+            {
+                $titlec: post.title,
+                $categoriesc: `%${post.categories}%`
+            }
+        ];
+        try {
+            yield call([postModel, "editCB"], curUser, post);
+        } catch (error) {
+            errMsg = error.toString();
+        }
+        if (errMsg) {
+            console.log(`修改随笔失败：${post.title}，失败原因：${errMsg}`)
+        } else {
+            console.log(`修改随笔：${post.title}`)
+        }
+        yield call([postModel, "edit"], new PostBean({ addtype: errMsg ? "failed" : "success" }), where);
+    }
+
     for (let i = 0; i < addedPost.length; i++) {
         let post = addedPost[i];
         let postid = "";
@@ -105,29 +129,6 @@ function* pushPostGen() {
         yield sleep(66666); // 30秒内只能发布1篇博文
     }
 
-    for (let i = 0; i < modifiedPost.length; i++) {
-        let post = modifiedPost[i];
-        let errMsg = null;
-        let where = [
-            `(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
-            {
-                $titlec: post.title,
-                $categoriesc: `%${post.categories}%`
-            }
-        ];
-        try {
-            yield call([postModel, "editCB"], curUser, post);
-        } catch (error) {
-            errMsg = error.toString();
-        }
-        if (errMsg) {
-            console.log(`修改随笔失败：${post.title}，失败原因：${errMsg}`)
-        } else {
-            console.log(`修改随笔：${post.title}`)
-        }
-        yield call([postModel, "edit"], new PostBean({ addtype: errMsg ? "failed" : "success" }), where);
-    }
-
     // 输出结果
     console.log("dbh post push 完成");
 }
@@ -145,7 +146,7 @@ function* listPostGen(options) {
     }
     posts = yield call(
         [postModel, "get"],
-        where 
+        where
     );
     posts.forEach(d => {
         console.log(`${d.addtype}:${d.title}`)
