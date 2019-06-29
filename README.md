@@ -18,7 +18,7 @@ npm install -g cnblogs-helper
 cbh init [--reset]
 ```
 
--   说明：初始化博客园随笔同步工具
+-   说明：初始化博客园随笔同步工具（默认拉 999 个随笔）
 -   参数：
     -   `--reset` : 删除原有数据库，重新初始化
 
@@ -42,6 +42,12 @@ cbh post add
 
 -   说明: 本地随笔变动添加到数据暂存区
 
+```bash
+cbh post remove
+```
+
+-   说明: 删除暂存区将要提交到博客园的随笔
+
 ### `cbh post push`
 
 ```bash
@@ -49,3 +55,16 @@ cbh post push
 ```
 
 -   说明: 将暂存区随笔变动推到博客园
+
+### `cbh post list`
+
+```bash
+cbh post list
+```
+
+-   说明：查看暂存区的随笔
+-   参数：
+    -   `--waitpush` （默认）列出将要提交到博客园的随笔
+    -   `--all` 列出全部随笔
+    -   `--failed` 列出提交到博客园失败的随笔
+    

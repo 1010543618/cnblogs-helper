@@ -34,5 +34,8 @@ var types = {
     num: [null, Number],
     pangu: Boolean,
     reset: Boolean,
-    long: Boolean
+    long: Boolean,
+    all: Boolean,
+    waitpush: Boolean,
+    failed: Boolean,
 }
