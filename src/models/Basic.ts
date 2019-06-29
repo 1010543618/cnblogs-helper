@@ -1,6 +1,7 @@
 import config from "../config/config";
 import { Bean } from '../beans';
 import log from "../utils/log";
+import obj2str from "../utils/obj2str";
 
 const path = require("path");
 export default class Basic < T extends Bean > {
@@ -50,7 +51,7 @@ export default class Basic < T extends Bean > {
         });
     }
 
-    edit(bean: T, where: Array<string | object>): Promise < boolean > {
+    edit(bean: T, where: Array < string | object > ): Promise < boolean > {
         if (!where) {
             throw new Error("未设置修改条件！");
         }
@@ -64,20 +65,20 @@ export default class Basic < T extends Bean > {
             try {
                 _db.run(sql, dollerBean, err => {
                     if (err) {
-                        log("error", [err, sql]);
+                        log("error", [err, sql, obj2str(dollerBean)]);
                         rej(err);
                         return;
                     }
                     res(true);
                 })
             } catch (error) {
-                log("error", [error, sql]);
+                log("error", [error, sql, obj2str(dollerBean)]);
                 rej(error);
             }
         });
     }
 
-    get(where: Array<string | object>): Promise < Array < T > > {
+    get(where: Array < string | object > ): Promise < Array < T > > {
         var _db = this.db;
         return new Promise((res, rej) => {
             let sql = `select * from ${this.tablename} where ${where[0]}`;

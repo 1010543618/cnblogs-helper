@@ -2,6 +2,6 @@
     "compilerOptions": {
         "noImplicitAny": false,
         "module": "commonjs",
-        "target": "es2015"
+        "target": "es2017"
     }
 }
