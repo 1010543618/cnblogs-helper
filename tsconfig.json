@@ -1,7 +1,7 @@
 {
-    "compilerOptions": {
-        "noImplicitAny": false,
-        "module": "commonjs",
-        "target": "es2017"
-    }
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "module": "commonjs",
+    "target": "es2017"
+  }
 }
