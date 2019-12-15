@@ -1,5 +1,8 @@
 {
-    "categoryMap": {
-        "tests/testData/": "[随笔分类]小工具"
-    }
+  "categoryMap": {
+    "tests/testData/": "[随笔分类]小工具"
+  },
+  "replaceImgURL": {
+    "base": "http://tset.com"
+  }
 }
