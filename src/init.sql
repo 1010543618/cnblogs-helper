@@ -17,10 +17,9 @@ CREATE TABLE IF NOT EXISTS BlogInfo (
 CREATE TABLE IF NOT EXISTS Post (
   postid TEXT,
   title TEXT,
-  titlePangu TEXT,
   description TEXT,
   categories TEXT, -- array of string
-  addtype TEXT, -- "null"/"added"/"modified"/("deleted" 未实现)
+  p_state TEXT, -- "latest"/"add"/"update"/"add_failed"/"update_fialed"
   dateCreated NUMERIC,
   enclosure TEXT, -- struct Enclosure
   link TEXT,
@@ -34,7 +33,7 @@ CREATE TABLE IF NOT EXISTS Post (
   mt_excerpt TEXT,
   mt_keywords TEXT,
   wp_slug TEXT,
-  PRIMARY KEY(postid, title, categories)
+  PRIMARY KEY(postid)
 );
 CREATE TABLE IF NOT EXISTS CategoryInfo (
   description TEXT,

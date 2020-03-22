@@ -1,20 +1,28 @@
-var tape = require('tape');
-var Category = require('../../lib/models/Category').default;
-var beans = require('../../lib/beans');
+var tape = require("tape");
+var cbh = require("../../lib/cbh").default;
 
-tape('model-Category test', function(t) {
+tape("model-Category test", function(t) {
+  cbh.load(() => {
     atest(t);
-})
+  });
+});
 
 async function atest(t) {
-    let category = new Category();
+  var Category = require("../../lib/models/Category").default;
+  var beans = require("../../lib/beans");
 
-    try {
-        await category.pull(new beans.BlogInfoBean({ blogid: "test" }),
-            new beans.UserBean({ user: "test", pwd: "test" }));
-    } catch (e) {
-        t.equal(e.code, 500);
-    }
+  let category = new Category();
 
-    t.end();
+  try {
+    t.ok(
+      await category.pull(
+        new beans.UserBean({ user: "tuser", pwd: "tpwd" }),
+        new beans.BlogInfoBean({ blogid: "tblogid" })
+      )
+    );
+  } catch (e) {
+    t.fail(e);
+  }
+
+  t.end();
 }

@@ -1,0 +1,295 @@
+module.exports = {
+  "<methodName>blogger.getUsersBlogs</methodName>": `<?xml version="1.0"?>
+<methodResponse>
+    <params>
+        <param>
+            <value>
+                <array>
+                    <data>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>blogid</name>
+                                    <value>
+                                        <string>408721</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>url</name>
+                                    <value>
+                                        <string>https://www.cnblogs.com/jffun-blog/</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>blogName</name>
+                                    <value>
+                                        <string>zjffun</string>
+                                    </value>
+                                </member>
+                            </struct>
+                        </value>
+                    </data>
+                </array>
+            </value>
+        </param>
+    </params>
+</methodResponse>`,
+  "<methodName>metaWeblog.getCategories</methodName>": `<?xml version="1.0"?>
+<methodResponse>
+    <params>
+        <param>
+            <value>
+                <array>
+                    <data>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>description</name>
+                                    <value>
+                                        <string>[发布至博客园首页]</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>htmlUrl</name>
+                                    <value>
+                                        <string />
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>rssUrl</name>
+                                    <value>
+                                        <string />
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>title</name>
+                                    <value>
+                                        <string>[发布至博客园首页]</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>categoryid</name>
+                                    <value>
+                                        <string>0</string>
+                                    </value>
+                                </member>
+                            </struct>
+                        </value>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>description</name>
+                                    <value>
+                                        <string>[Markdown]</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>htmlUrl</name>
+                                    <value>
+                                        <string />
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>rssUrl</name>
+                                    <value>
+                                        <string />
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>title</name>
+                                    <value>
+                                        <string>[Markdown]</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>categoryid</name>
+                                    <value>
+                                        <string>-5</string>
+                                    </value>
+                                </member>
+                            </struct>
+                        </value>
+                    </data>
+                </array>
+            </value>
+        </param>
+    </params>
+</methodResponse>`,
+  "<methodName>metaWeblog.getRecentPosts</methodName>": `<?xml version="1.0"?>
+<methodResponse>
+    <params>
+        <param>
+            <value>
+                <array>
+                    <data>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>dateCreated</name>
+                                    <value>
+                                        <dateTime.iso8601>20200320T11:05:00</dateTime.iso8601>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>description</name>
+                                    <value>
+                                        <string>测试 post 内容</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>title</name>
+                                    <value>
+                                        <string>测试 post 标题</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>enclosure</name>
+                                    <value>
+                                        <struct>
+                                            <member>
+                                                <name>length</name>
+                                                <value>
+                                                    <i4>0</i4>
+                                                </value>
+                                            </member>
+                                        </struct>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>link</name>
+                                    <value>
+                                        <string>https://www.cnblogs.com/jffun-blog/p/12530382.html</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>permalink</name>
+                                    <value>
+                                        <string>https://www.cnblogs.com/jffun-blog/p/12530382.html</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>postid</name>
+                                    <value>
+                                        <string>12530382</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>source</name>
+                                    <value>
+                                        <struct />
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>userid</name>
+                                    <value>
+                                        <string>-2</string>
+                                    </value>
+                                </member>
+                            </struct>
+                        </value>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>dateCreated</name>
+                                    <value>
+                                        <dateTime.iso8601>20200320T11:05:00</dateTime.iso8601>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>description</name>
+                                    <value>
+                                        <string>测试 post 内容2</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>title</name>
+                                    <value>
+                                        <string>测试 post 标题2</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>categories</name>
+                                    <value>
+                                        <array>
+                                            <data>
+                                                <value>
+                                                    <string>[随笔分类]测试</string>
+                                                </value>
+                                            </data>
+                                        </array>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>enclosure</name>
+                                    <value>
+                                        <struct>
+                                            <member>
+                                                <name>length</name>
+                                                <value>
+                                                    <i4>0</i4>
+                                                </value>
+                                            </member>
+                                        </struct>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>link</name>
+                                    <value>
+                                        <string>https://www.cnblogs.com/jffun-blog/p/12530382.html</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>permalink</name>
+                                    <value>
+                                        <string>https://www.cnblogs.com/jffun-blog/p/12530382.html</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>postid</name>
+                                    <value>
+                                        <string>t12530382</string>
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>source</name>
+                                    <value>
+                                        <struct />
+                                    </value>
+                                </member>
+                                <member>
+                                    <name>userid</name>
+                                    <value>
+                                        <string>-2</string>
+                                    </value>
+                                </member>
+                            </struct>
+                        </value>
+                    </data>
+                </array>
+            </value>
+        </param>
+    </params>
+</methodResponse>`,
+  "<methodName>metaWeblog.newPost</methodName>"() {
+    return `<?xml version="1.0"?>
+<methodResponse>
+    <params>
+        <param>
+            <value>
+                <string>${Math.random()}</string>
+            </value>
+        </param>
+    </params>
+</methodResponse>`;
+  },
+  "<methodName>metaWeblog.editPost</methodName>": ``,
+  "<methodName>blogger.deletePost</methodName>": `<methodResponse>
+    <params>
+        <param>
+            <value>
+                <boolean>1</boolean>
+            </value>
+        </param>
+    </params>
+</methodResponse>`
+};

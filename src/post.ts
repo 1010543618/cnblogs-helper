@@ -27,30 +27,28 @@ cbh post add
 cbh post push
 说明: 将暂存区随笔变动推到博客园
 
-cbh post remove
-说明: 将暂存区随笔变动清除`,
+cbh post list 
+说明: 列出暂存区随笔
+`,
     null
   )
 });
 
 const postModel = new Post();
 
-export default function post(argv) {
+export default function post(argv, cb) {
   switch (argv[0]) {
     case "pull":
-      sync(pullPostGen, cbh.config.get("opts").num);
+      sync(pullPostGen, [cbh.config.get("opts").num], cb);
       break;
     case "add":
-      addPost();
+      addPost(cb);
       break;
     case "push":
-      sync(pushPostGen);
-      break;
-    case "remove":
-      removePost();
+      sync(pushPostGen, [cbh.config.get("opts").wait], cb);
       break;
     case "list":
-      sync(listPostGen, cbh.config.get("opts"));
+      sync(listPostGen, [cbh.config.get("opts")], cb);
     default:
       break;
   }
@@ -68,16 +66,16 @@ export function* pullPostGen(num = 200) {
   );
 }
 
-function* pushPostGen() {
+function* pushPostGen(wait) {
   let curBlog = yield call([new Blog(), "getCurrent"]);
   let curUser = yield call([new User(), "getCurrent"]);
   let addedPost = yield call(
     [postModel, "get"],
-    ["addtype = $addtypec", { $addtypec: "added" }]
+    ["p_state = $p_statec", { $p_statec: "add" }]
   );
   let modifiedPost = yield call(
     [postModel, "get"],
-    ["addtype = $addtypec", { $addtypec: "modified" }]
+    ["p_state = $p_statec", { $p_statec: "update" }]
   );
 
   // 先修改比较好，因为添加需要等好久
@@ -85,10 +83,9 @@ function* pushPostGen() {
     let post = modifiedPost[i];
     let errMsg = null;
     let where = [
-      `(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
+      `postid = $postidc`,
       {
-        $titlec: post.title,
-        $categoriesc: `%${post.categories}%`
+        $postidc: post.postid
       }
     ];
     try {
@@ -103,12 +100,13 @@ function* pushPostGen() {
     }
     yield call(
       [postModel, "edit"],
-      new PostBean({ addtype: errMsg ? "failed" : "success" }),
+      new PostBean({ p_state: errMsg ? "update_failed" : "latest" }),
       where
     );
   }
 
   for (let i = 0; i < addedPost.length; i++) {
+    yield sleep(wait); // 30秒内只能发布1篇博文
     let post = addedPost[i];
     let postid = "";
     let errMsg = null;
@@ -118,7 +116,7 @@ function* pushPostGen() {
       errMsg = error.toString();
     }
     let where = [
-      `(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
+      `title = $titlec and categories like $categoriesc`,
       {
         $titlec: post.title,
         $categoriesc: `%${post.categories}%`
@@ -126,7 +124,7 @@ function* pushPostGen() {
     ];
     yield call(
       [postModel, "edit"],
-      new PostBean({ postid, addtype: errMsg ? "failed" : "success" }),
+      new PostBean({ postid, p_state: errMsg ? "add_failed" : "latest" }),
       where
     );
     if (errMsg) {
@@ -134,7 +132,6 @@ function* pushPostGen() {
     } else {
       console.log(`添加随笔：${post.title}`);
     }
-    yield sleep(66666); // 30秒内只能发布1篇博文
   }
 
   // 输出结果
@@ -145,24 +142,27 @@ function* listPostGen(options) {
   let where = [],
     posts = [];
   if (options.failed) {
-    where = ["addtype = $addtypec", { $addtype1c: "failed" }];
+    where = [
+      "p_state in ($p_state1c, $p_state2c)",
+      { $p_state1c: "add_failed", $p_state2c: "update_failed" }
+    ];
   } else if (options.all) {
     where = ["true", {}];
   } else {
     //willpush
     where = [
-      "addtype in ($addtype1c, $addtype2c)",
-      { $addtype1c: "added", $addtype2c: "modified" }
+      "p_state in ($p_state1c, $p_state2c)",
+      { $p_state1c: "add", $p_state2c: "update" }
     ];
   }
   posts = yield call([postModel, "get"], where);
   posts.forEach(d => {
-    console.log(`${d.addtype}:${d.title}`);
+    console.log(`${d.p_state}:${d.title}`);
   });
   return posts;
 }
 
-function addPost() {
+function addPost(cb) {
   let categoryMap = cbh.config.get("categoryMap");
   let promises = [];
   for (const key in categoryMap) {
@@ -188,17 +188,7 @@ function addPost() {
     .then(val => {
       console.log("cbh post add 成功，添加记录：");
       console.log(val.filter(d => d).join("\r\n"));
-    })
-    .catch(e => {
-      console.log(e);
-    });
-}
-
-function removePost() {
-  postModel
-    .remove()
-    .then(_ => {
-      console.log("cbh post remove 成功，暂存区已无待提交的随笔");
+      cb();
     })
     .catch(e => {
       console.log(e);
@@ -207,10 +197,11 @@ function removePost() {
 
 async function addOrEditPost(title, description, category) {
   let where = [
-    `(title = $titlec or titlePangu = $titlec) and categories like $categoriesc`,
+    `title = $titlec and categories like $categoriesc and p_state = $p_state`,
     {
       $titlec: title,
-      $categoriesc: `%${category}%`
+      $categoriesc: `%${category}%`,
+      $p_state: "latest"
     }
   ];
   let currentPost = (await postModel.get(where))[0];
@@ -229,11 +220,13 @@ async function addOrEditPost(title, description, category) {
     categoriesSet.add(category);
     categoriesSet.add("[Markdown]");
     tempPost.categories = JSON.stringify([...categoriesSet]);
-    if (currentPost.addtype !== "added") {
-      // 状态为 added 时不改变状态
-      tempPost.addtype = "modified";
-    }
-    await postModel.edit(tempPost, where);
+    tempPost.p_state = "update";
+    await postModel.edit(tempPost, [
+      "postid = $postidc",
+      {
+        $postidc: currentPost.postid
+      }
+    ]);
     return `edit ${category}\\${title}`;
   }
 
@@ -242,7 +235,10 @@ async function addOrEditPost(title, description, category) {
   tempPost.description = description;
   // 发布 Markdown 随笔要加上 [Markdown] 这个分类
   tempPost.categories = JSON.stringify([category, "[Markdown]"]);
-  tempPost.addtype = "added";
+  tempPost.p_state = "add";
+  tempPost.postid = Math.random()
+    .toString(36)
+    .replace("0.", "_");
   await postModel.add([tempPost]);
   return `add ${category}\\${title}`;
 }

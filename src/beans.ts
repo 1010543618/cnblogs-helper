@@ -58,7 +58,6 @@ export class PostBean extends Bean {
   dateCreated: number;
   description: string;
   title: string;
-  titlePangu: string;
   categories: string | Array<string>;
   enclosure: string;
   link: string;
@@ -72,17 +71,12 @@ export class PostBean extends Bean {
   mt_excerpt: string;
   mt_keywords: string;
   wp_slug: string;
-  addtype: string;
+  p_state: string;
   constructor(obj?: any) {
     super(obj);
     this.dateCreated = this.dateCreated || 0;
     this.description = this.description || "";
     this.title = this.title || "";
-    this.titlePangu = pangu.spacing(this.title);
-    this.categories =
-      Object.prototype.toString.call(this.categories) === "[object Array]"
-        ? JSON.stringify(this.categories)
-        : "[]";
     this.enclosure = this.enclosure || "";
     this.link = this.link || "";
     this.permalink = this.permalink || "";
@@ -95,7 +89,17 @@ export class PostBean extends Bean {
     this.mt_excerpt = this.mt_excerpt || "";
     this.mt_keywords = this.mt_keywords || "";
     this.wp_slug = this.wp_slug || "";
-    this.addtype = this.addtype || "";
+    this.p_state = this.p_state || "";
+
+    if (this.categories) {
+      if (
+        Object.prototype.toString.call(this.categories) === "[object Array]"
+      ) {
+        this.categories = JSON.stringify(this.categories);
+      }
+    } else {
+      this.categories = "[]";
+    }
   }
   getCBParas() {
     let obj = Object.assign(Object.create(this.constructor.prototype), this);

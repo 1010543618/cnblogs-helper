@@ -1,44 +1,62 @@
-var tape = require('tape');
-var Post = require('../../lib/models/Post').default;
-var beans = require('../../lib/beans');
+var tape = require("tape");
+var cbh = require("../../lib/cbh").default;
 
-tape('model-Post test', function(t) {
+tape("model-Post test", function(t) {
+  cbh.load(() => {
     atest(t);
-})
+  });
+});
 
 async function atest(t) {
-    let post = new Post();
+  var Post = require("../../lib/models/Post").default;
+  var beans = require("../../lib/beans");
+  let post = new Post();
 
-    try {
-        await post.getCB(new beans.BlogInfoBean({ blogid: "test" }),
-            new beans.UserBean({ user: "test", pwd: "test" }), 1);
-    } catch (e) {
-        t.equal(e.code, 500);
-    }
+  try {
+    t.ok(
+      await post.getCB(
+        new beans.BlogInfoBean({ blogid: "tblogid" }),
+        new beans.UserBean({ user: "tuser", pwd: "tpwd" }),
+        1
+      )
+    );
+  } catch (e) {
+    t.fail(e);
+  }
 
-    try {
-        await post.addCB(new beans.BlogInfoBean({ blogid: "test" }),
-            new beans.UserBean({ user: "test", pwd: "test" }),
-            new beans.PostBean({ title: "test", description: "test" }));
-    } catch (e) {
-        t.ok(e.code === 500);
-    }
+  try {
+    t.ok(
+      await post.addCB(
+        new beans.BlogInfoBean({ blogid: "tblogid" }),
+        new beans.UserBean({ user: "tuser", pwd: "tpwd" }),
+        new beans.PostBean({ title: "ttitle", description: "tdescription" })
+      )
+    );
+  } catch (e) {
+    t.fail(e);
+  }
 
-    try {
-        await post.editCB(new beans.UserBean({ user: "test", pwd: "test" }),
-            new beans.PostBean({ postid: 'test' }));
-    } catch (e) {
-        t.equal(e.code, 500);
-    }
+  try {
+    t.ok(
+      post.editCB(
+        new beans.UserBean({ user: "tuser", pwd: "tpwd" }),
+        new beans.PostBean({ postid: "12539406" })
+      )
+    );
+  } catch (e) {
+    t.fail(e);
+  }
 
-    // post remove
-    await post.add([new beans.PostBean({ title: "test-ra", addtype: "added" })])
-    await post.remove();
-    t.equal((await post.get(['addtype != $t',
-        {
-            $t1: '',
-        }
-    ])).length, 0);
+  try {
+    t.ok(
+      post.deleteCB(
+        new beans.UserBean({ user: "tuser", pwd: "tpwd" }),
+        new beans.PostBean({ postid: "12539406" })
+      )
+    );
+  } catch (e) {
+    t.fail(e);
+  }
 
-    t.end();
+  t.end();
 }

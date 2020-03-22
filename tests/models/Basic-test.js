@@ -1,23 +1,47 @@
-var tape = require('tape');
-var Basic = require('../../lib/models/Basic').default;
-var PostBean = require('../../lib/beans').PostBean;
+var tape = require("tape");
+var cbh = require("../../lib/cbh").default;
 
-tape('model-Basic test', function(t) {
+tape("model-Basic test", function(t) {
+  cbh.load(function() {
     atest(t);
-})
+  });
+});
 
 async function atest(t) {
-    let basic = new Basic();
-    basic.tablename = "Post";
-    basic.bean = PostBean;
+  const Basic = require("../../lib/models/Basic").default;
+  const PostBean = require("../../lib/beans").PostBean;
+  let basic = new Basic();
+  basic.tablename = "Post";
+  basic.bean = PostBean;
 
-    t.equal(await basic.add([new PostBean({ title: "test" })]), true);
+  // add
+  t.equal(
+    await basic.add([
+      new PostBean({
+        postid: Math.random(),
+        title: "basic-t-title",
+        categories: "[test]"
+      })
+    ]),
+    true
+  );
 
-    let tpost = await basic.get(["title = $test", { $test: "test" }]);
-    t.equal(tpost[0].title, "test");
+  // get
+  let tpost = await basic.get(["title = $test", { $test: "basic-t-title" }]);
+  t.equal(tpost[0].title, "basic-t-title");
+  t.equal(tpost[0].categories, "[test]");
 
-    t.equal(await basic.edit(new PostBean({ title: "test", "description": "test" }),
-        ["title = $test", { $test: "test" }]), true);
+  // edit
+  t.equal(
+    await basic.edit(
+      new PostBean({
+        title: "basic-t-title2",
+        description: "basic-t-description"
+      }),
+      ["title = $test", { $test: "basic-t-title" }]
+    ),
+    true
+  );
 
-    t.end();
+  t.end();
 }

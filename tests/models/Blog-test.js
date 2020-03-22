@@ -1,21 +1,30 @@
-var tape = require('tape');
-var Blog = require('../../lib/models/Blog').default;
-var beans = require('../../lib/beans');
+var tape = require("tape");
+var cbh = require("../../lib/cbh").default;
 
-tape('model-Blog test', function(t) {
+tape("model-Blog test", function(t) {
+  cbh.load(() => {
     atest(t);
-})
+  });
+});
 
 async function atest(t) {
-    let blog = new Blog();
-    
-    try {
-        await blog.getFromCB([new beans.UserBean({ user: "test", pwd: "test" })]);
-    } catch (e) {
-        t.equal(e.code, 500);
-    }
+  var Blog = require("../../lib/models/Blog").default;
+  var beans = require("../../lib/beans");
+  let blog = new Blog();
 
-    t.ok((await blog.getCurrent()) instanceof beans.BlogInfoBean);
+  // get form cnblogs
+  try {
+    t.ok(
+      (await blog.getFromCB(
+        new beans.UserBean({ user: "tuser", pwd: "tpwd" })
+      )) instanceof beans.BlogInfoBean
+    );
+  } catch (e) {
+    fail(e);
+  }
 
-    t.end();
+  // get current
+  t.ok((await blog.getCurrent()) instanceof beans.BlogInfoBean);
+
+  t.end();
 }
